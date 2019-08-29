@@ -51,13 +51,15 @@ WORKDIR ${WORKING_DIR}/src
 # ca-certificates is already present (in python:3.6-alpine3.9).
 # {WORKING_DIR}/.cache contains pip and pipenv cache. ~140MB
 # `npm cache clean` deletes ${WORKING_DIR}/.npm/_cacache directory. ~130MB
+# libpq, libxslt and libxml2 comes for Python libraries (ie. xml parsing).
+# mailcap are mimetypes for uwsgi.
+# icu-libs is for timezones/dates/LANG.
 RUN set -ex \
   && apk --no-cache add --virtual .build-deps \
     build-base \
     curl \
     git \
     libffi-dev \
-    libpq \
     libxml2-dev \
     libxslt-dev \
     openssl-dev \
@@ -66,8 +68,13 @@ RUN set -ex \
   && apk --no-cache add \
     bash \
     icu-libs \
+    libpq \
+    libxslt \
+    libxml2 \
+    mailcap \
     nodejs \
     npm \
+    openssl \
   && pip install --no-cache-dir --upgrade pip \
   && pip install --no-cache-dir --upgrade pipenv setuptools wheel \
   && su -c "cd ${WORKING_DIR}/src && $(which bash) ./scripts/bootstrap --deploy \
