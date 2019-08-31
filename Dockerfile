@@ -82,6 +82,6 @@ RUN set -ex \
   && rm -fr ui/node_modules \
   && npm cache clean -f" - invenio \
   && apk del .build-deps \
-  && rm -rf ${WORKING_DIR}/.cache \
+  && rm -rf ${WORKING_DIR}/.cache
 
 USER invenio
