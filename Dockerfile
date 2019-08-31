@@ -28,8 +28,7 @@ ENV INVENIO_COLLECT_STORAGE='flask_collect.storage.file'
 
 # create user, add it to its own group and change permissions to its home
 RUN adduser -D -u 1000 -h ${WORKING_DIR} invenio invenio \
-  && adduser invenio invenio \
-  && chown invenio:invenio ${WORKING_DIR}
+  && adduser invenio invenio
 
 # set the locale thanks to icu-libs
 ENV LANG en_US.UTF-8
@@ -37,15 +36,16 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 # copy uwsgi config files
-COPY ./docker/uwsgi/ ${INVENIO_INSTANCE_PATH}
+COPY --chown=invenio:invenio ./docker/uwsgi/ ${INVENIO_INSTANCE_PATH}
 
 # copy everything inside /src
 RUN mkdir -p ${WORKING_DIR}/src
 COPY --chown=invenio:invenio . ${WORKING_DIR}/src
 WORKDIR ${WORKING_DIR}/src
 
-# Why +w?
-# RUN chmod -R go+w ${WORKING_DIR}
+# for some file to be written (example: egg-info)
+RUN chown -R invenio:invenio ${WORKING_DIR} \
+  && chmod -R go+w ${WORKING_DIR}
 
 # --no-cache option do `apk update` and delete /var/apk/cache content.
 # Does vim-tiny really needed?
