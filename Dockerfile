@@ -26,9 +26,10 @@ RUN mkdir -p ${INVENIO_INSTANCE_PATH}
 
 ENV INVENIO_COLLECT_STORAGE='flask_collect.storage.file'
 
-# create user
-RUN adduser -D -u 1000 -h ${WORKING_DIR} invenio invenio
-RUN chown invenio:invenio ${WORKING_DIR}
+# create user, add it to its own group and change permissions to its home
+RUN adduser -D -u 1000 -h ${WORKING_DIR} invenio invenio \
+  && adduser invenio invenio \
+  && chown invenio:invenio ${WORKING_DIR}
 
 # set the locale thanks to icu-libs
 ENV LANG en_US.UTF-8
@@ -83,4 +84,4 @@ RUN set -ex \
   && apk del .build-deps \
   && rm -rf ${WORKING_DIR}/.cache \
 
-USER 1000
+USER invenio
